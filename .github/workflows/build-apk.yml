@@ -1,0 +1,59 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch: # Allows manual trigger from GitHub Actions UI
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # Shallow clone for maximum build speed
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          # If the repository does not contain a Gradle wrapper, this sets up 
+          # a stable, high-performance Gradle version automatically.
+          gradle-version: '8.10.2'
+
+      - name: Make Gradle Executable (if wrapper exists)
+        run: |
+          if [ -f "./gradlew" ]; then
+            chmod +x gradlew
+          fi
+
+      - name: Build Debug APK with Gradle
+        run: |
+          if [ -f "./gradlew" ]; then
+            ./gradlew assembleDebug --no-daemon --parallel --build-cache
+          else
+            gradle assembleDebug --no-daemon --parallel --build-cache
+          fi
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: secure-vault-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14 # Store for 14 days before automatic cleanup

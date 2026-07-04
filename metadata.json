@@ -1,0 +1,6 @@
+{
+  "name": "Simple Calculator",
+  "description": "A fully functional calculator with a hidden media vault for photos and videos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
