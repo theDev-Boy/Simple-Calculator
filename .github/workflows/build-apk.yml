@@ -34,7 +34,7 @@ jobs:
         with:
           # If the repository does not contain a Gradle wrapper, this sets up 
           # a stable, high-performance Gradle version automatically.
-          gradle-version: '8.10.2'
+          gradle-version: '9.3.1'
 
       - name: Make Gradle Executable (if wrapper exists)
         run: |
